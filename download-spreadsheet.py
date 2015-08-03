@@ -3,19 +3,20 @@ import gspread
 import urllib
 import codecs
 from config import config
-
+import json
+from oauth2client.client import SignedJwtAssertionCredentials
 
 #config
-username = config['USERNAME']
-password = config['PASSWORD']
-docs = [
-    {"doc": "My 1st Spreadsheet Name"},
-    {"doc":"My 2nd Spreadsheet Name"} 
-    ]
+docs = config['DOCS']
 
+# open the json file with the oath2 credentials
+json_key = json.load(open('oauth2_credentials.json'))
+scope = ['https://spreadsheets.google.com/feeds']
 
 # login first
-client = gspread.login(username, password)
+credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
+
+client = gspread.authorize(credentials)
 
 #process doc list
 for doc in docs:
